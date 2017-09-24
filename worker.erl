@@ -1,7 +1,7 @@
 -module(worker).
 -export([start/5, stop/1, peers/2]).
 
-start(Name, Seed, Sleep, Jitter) ->
+start(Name, Logger, Seed, Sleep, Jitter) ->
 	spawn_link(fun() -> init(Name, Logger, Seed, Sleep, Jitter) end).
 
 stop(Worker) -> 
@@ -43,11 +43,11 @@ loop(Name, Log, Peers, Sleep, Jitter) ->
 	end.
 
 select(Peers) ->
-	lists:nth(random:uniform(length(Peers)), Peers).
+	lists:nth(rand:uniform(length(Peers)), Peers).
 
 jitter(0) ->ok;
 
-jitter(Jitter) -> timer:sleep(random:uniform(Jitter)).
+jitter(Jitter) -> timer:sleep(rand:uniform(Jitter)).
 
 
 

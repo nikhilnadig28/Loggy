@@ -2,7 +2,7 @@
 -export ([run/2]).
 
 run(Sleep, Jitter) ->
-	Log = worker:start([john, paul, ringo, george]),
+	Log = logger:start([john, paul, ringo, george]),
 	A = worker:start(john, Log, 13, Sleep, Jitter),
 	B = worker:start(paul, Log, 23, Sleep, Jitter),
 	C = worker:start(ringo, Log, 36, Sleep, Jitter),
