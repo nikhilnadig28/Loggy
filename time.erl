@@ -17,8 +17,7 @@ inc(Name, PeerList) ->
 peerupdate(Name, Time, PeerList) ->
 	case lists:keyfind(Name, 1, PeerList) of
 		{_, Value} ->
-			Max = merge(Value, Time),
-			{Max + 1, lists:keyreplace(Name, 1, PeerList, {Name, Max})};
+			{Max + 1, lists:keyreplace(Name, 1, PeerList, {Name, merge(Value, Time)})};
 
 		true -> 
 			PeerList
@@ -38,10 +37,6 @@ leq(Ti, Tj) ->
 			false
 	end.
 
- %return a clock to keep track of the nodes
- % clock(Nodes, List) ->
-
- 	% lists:foldl(fun(X,AccIn) -> [{X,0}|AccIn] end,[], Nodes).
 
 %return a clock that has been updated given that we have received a log messgae from
 % a node at a given time
@@ -52,41 +47,11 @@ update(From, Time, Table) ->
 		false ->
 			false
 	end.
-	% CurrentNode = lists:keyfind(From, 1, AllNodes),
-
-
-	% {_, CurrentList} = CurrentNode,
-	% case CurrentList of
-	%  	[] ->
-	%  		NewQueue = lists:keyreplace(From, 1, AllNodes, {From, CurrentList ++ [{Time, Msg}]});
-	%  	_ ->
-	%  		{OldTime, _} = lists:last(CurrentList),
-	%  		case Time > OldTime of
-	%  			true ->
-	%  				NewQueue = lists:keyreplace(From, 1, Time, {From, CurrentList ++ [{Time, Msg}]});
-	%  			false ->
-	%  				NewQueue = AllNodes
-
-	%  		end
-	%  end,
-
-	%  NewQueue.
+	
 
 %is it safe to log an event that happened at a given time. true or false
 safe(Min, SortedPeers, NewQueue) ->
-	% case Clock of
-	% 	[{Name, Time, {Action, {Msg, Id}}} | T] = Clock ->
-	% 		case Time =< MinTime of
-	% 			true ->
-	% 				Print = [{Name,Time,{Action,{Msg,Id}}}],
-	% 				logger:log(Print),
-	% 				safeprint(Min,T,Updated);
-	% 			false->
-	% 				Sorted
-	% 		end;
-	% 	[]->
-	% 		[]
-	% end.
+	
 	case SortedPeers of
 		[{Name, Time, {Action, {Msg,Id}}} | T] = SortedPeers ->
 			case Time =< Min of

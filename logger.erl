@@ -18,7 +18,6 @@ loop(SortList, Table) ->
 			SortedPeers = lists:keysort(2, [{From, Time, Msg}] ++ SortList),
 			[H | T] = NewQueue,
 			{_, Min} = H,
-		% log(From, Time, Msg),
 		NextQueue = time:safe(Min, SortedPeers, NewQueue),
 		loop(NextQueue, NewQueue);
 	stop ->
