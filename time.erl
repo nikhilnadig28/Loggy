@@ -17,7 +17,7 @@ inc(Name, PeerList) ->
 peerupdate(Name, Time, PeerList) ->
 	case lists:keyfind(Name, 1, PeerList) of
 		{_, Value} ->
-			{Max + 1, lists:keyreplace(Name, 1, PeerList, {Name, merge(Value, Time)})};
+			{merge(Value, Time) + 1, lists:keyreplace(Name, 1, PeerList, {Name, merge(Value, Time)})};
 
 		true -> 
 			PeerList
@@ -57,7 +57,7 @@ safe(Min, SortedPeers, NewQueue) ->
 			case Time =< Min of
 				true ->
 					LogMessage = [{Name, Time, {Action, {Msg, Id}}}],
-					log(LogMessage),
+					log(LogMessage, SortedPeers),
 					safe(Min, T, NewQueue);
 				false ->
 					SortedPeers
@@ -66,11 +66,12 @@ safe(Min, SortedPeers, NewQueue) ->
 			[]
 	end.
 
-log(LogMessage) ->
+log(LogMessage, SortedPeers) ->
 	case LogMessage of
 			[{From, Time, Msg} | T] ->
 				io:format("log : ~w ~w ~p ~n", [From, Time, Msg]),
-				log(T);
+				io:format("Length : ~w~n",[length(SortedPeers)]),
+				log(T, SortedPeers);
 			[] ->
 				ok
 	end.
