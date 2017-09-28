@@ -14,7 +14,9 @@ init(Nodes) ->
 loop(SortList, Table) ->
 	receive 
 		{log, From, Time, Msg} -> 
-			NewQueue = time:clock(From, Time, Table),
+			% io:format("TIme : ~w~n",[Time]),
+			% NewQueue = time:clock(From, Time, Table),
+			NewQueue = time:vclock(From, Time, Table), %Vector Time
 			SortedPeers = lists:keysort(2, [{From, Time, Msg}] ++ SortList),
 			[H | T] = NewQueue,
 			{_, Min} = H,

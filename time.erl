@@ -1,5 +1,5 @@
 -module (time).
--export ([zero/0, inc/2, peerupdate/3, merge/2, leq/2, clock/3, safe/3]).
+-export ([zero/0, inc/2,vinc/2, peerupdate/3, vpeerupdate/3, merge/2, leq/2, clock/3, vclock/3, safe/3]).
 
 zero() ->
 	0.
@@ -14,10 +14,38 @@ inc(Name, PeerList) ->
 
 	end.
 
+%vector time
+vinc(Name, PeerList) ->
+	case lists:keyfind(Name, 1, PeerList) of
+		{_, Value} ->
+			Time = timestamp(),
+			{Time, lists:keyreplace(Name, 1, PeerList, {Name, Time})};
+
+		false -> 
+			0
+
+	end.
+
+%to get a unique timestamp
+timestamp() ->
+	  {MegaSecs, Secs, MicroSecs} = os:timestamp(),
+    MegaSecs*1000000000000 + Secs*1000000 + MicroSecs.
+
 peerupdate(Name, Time, PeerList) ->
 	case lists:keyfind(Name, 1, PeerList) of
 		{_, Value} ->
 			{merge(Value, Time) + 1, lists:keyreplace(Name, 1, PeerList, {Name, merge(Value, Time)})};
+
+		true -> 
+			PeerList
+
+	end.
+
+%Vector Time
+vpeerupdate(Name, Time, PeerList) ->
+	case lists:keyfind(Name, 1, PeerList) of
+		{_, Value} ->
+			{merge(Value, Time), lists:keyreplace(Name, 1, PeerList, {Name, merge(Value, Time)})};
 
 		true -> 
 			PeerList
@@ -48,6 +76,13 @@ clock(From, Time, Table) ->
 			false
 	end.
 	
+vclock(From, Time, Table) ->
+	case lists:keyfind(From, 1, Table) of
+		{_, Value} ->
+			lists:keysort(2, lists:keyreplace(From, 1, Table, {From, Time}));
+		false ->
+			false
+	end.
 
 %is it safe to log an event that happened at a given time. true or false
 safe(Min, SortedPeers, NewQueue) ->
@@ -69,8 +104,8 @@ safe(Min, SortedPeers, NewQueue) ->
 log(LogMessage, SortedPeers) ->
 	case LogMessage of
 			[{From, Time, Msg} | T] ->
-				io:format("log : ~w ~w ~p ~n", [From, Time, Msg]),
-				io:format("Length : ~w~n",[length(SortedPeers)]),
+				 io:format("log : ~w ~w ~p ~n", [From, Time, Msg]),
+				% io:format("Length : ~w~n",[length(SortedPeers)]),
 				log(T, SortedPeers);
 			[] ->
 				ok

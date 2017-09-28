@@ -28,7 +28,8 @@ loop(Name, Log, Peers, Sleep, Jitter, PeerList) ->
 	Wait = random:uniform(Sleep),
 	receive
 		{msg, Time, Msg} ->
-			{UpdatedTime, CurrentNode} = time:peerupdate(Name, Time, PeerList),
+			% {UpdatedTime, CurrentNode} = time:peerupdate(Name, Time, PeerList),
+			{UpdatedTime, CurrentNode} = time:vpeerupdate(Name, Time, PeerList), %Vector Time
 			Log ! {log, Name, UpdatedTime, {received, Msg}},
 			loop(Name, Log, Peers, Sleep, Jitter, CurrentNode);
 		stop ->
@@ -39,7 +40,8 @@ loop(Name, Log, Peers, Sleep, Jitter, PeerList) ->
 	after Wait -> 
 			Selected = select(Peers),
 			% Time = na,
-			{Time, CurrentNode} = time:inc(Name, PeerList), 
+			% {Time, CurrentNode} = time:inc(Name, PeerList), 
+			{Time, CurrentNode} = time:vinc(Name, PeerList), %Vector Time
 			Message = {hello, random:uniform(100)},
 			Selected ! {msg, Time, Message},
 			jitter(Jitter),
