@@ -14,7 +14,7 @@ init(Nodes) ->
 loop(SortList, Table) ->
 	receive 
 		{log, From, Time, Msg} -> 
-			NewQueue = time:update(From, Time, Table),
+			NewQueue = time:clock(From, Time, Table),
 			SortedPeers = lists:keysort(2, [{From, Time, Msg}] ++ SortList),
 			[H | T] = NewQueue,
 			{_, Min} = H,

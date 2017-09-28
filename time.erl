@@ -1,5 +1,5 @@
 -module (time).
--export ([zero/0, inc/2, peerupdate/3, merge/2, leq/2, update/3, safe/3]).
+-export ([zero/0, inc/2, peerupdate/3, merge/2, leq/2, clock/3, safe/3]).
 
 zero() ->
 	0.
@@ -40,7 +40,7 @@ leq(Ti, Tj) ->
 
 %return a clock that has been updated given that we have received a log messgae from
 % a node at a given time
-update(From, Time, Table) -> 
+clock(From, Time, Table) -> 
 	case lists:keyfind(From, 1, Table) of
 		{_, Value} ->
 			lists:keysort(2, lists:keyreplace(From, 1, Table, {From, Time}));
